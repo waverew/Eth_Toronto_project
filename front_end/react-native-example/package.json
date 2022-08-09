@@ -13,7 +13,7 @@
     "@hashgraph/sdk": "^2.17.1",
     "@react-navigation/native": "^6.0.11",
     "@react-navigation/native-stack": "^6.7.0",
-    "expo": "~45.0.0",
+    "expo": "^46.0.2",
     "expo-crypto": "~10.2.0",
     "expo-random": "~12.2.0",
     "expo-secure-store": "~11.2.0",

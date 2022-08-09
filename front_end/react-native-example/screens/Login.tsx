@@ -106,11 +106,12 @@ const Login = (props: props) => {
       <Text>Enter Mnemonic</Text>
       <Input
         value={mnemonicStr}
-        onChangeText={(text) => setMnemonicStr(text)}
-      ></Input>
+        onChangeText={(text) => setMnemonicStr(text)}>
+
+      </Input>
 
       <Button onPress={fromString}>Make from Mnemonic</Button>
-      <Button onPress={createNew}>Genrate New</Button>
+      <Button onPress={createNew}>Generate New</Button>
 
       {error ? <Text>Error</Text> : <></>}
       {transaction && (
