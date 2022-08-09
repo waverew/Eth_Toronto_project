@@ -15,10 +15,11 @@ import { Input, VStack, Text, Button, HStack } from "native-base";
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 
+import {keyName, keyAccount} from '../constants' 
 interface props {
-  setLogin:any
+  setLogin: any;
 }
-const Login = (props:props) => {
+const Login = (props: props) => {
   async function save(key: any, value: any) {
     await SecureStore.setItemAsync(key, value);
   }
@@ -86,23 +87,48 @@ const Login = (props:props) => {
     };
     init();
   }, []);
-  async function createNew() {
+  async function createNewUser() {
     try {
       const mnemonic = await Mnemonic.generate12();
 
       setMnemonic(mnemonic);
-      save("key",mnemonic.toString())
-      props.setLogin(true)
+      save(keyName, mnemonic.toString());
+      save(keyAccount,"user")
+      props.setLogin(true);
     } catch (err: any) {
       Alert.alert(err.toString());
     }
   }
-  async function fromString() {
+  async function createNewFacility() {
+    try {
+      const mnemonic = await Mnemonic.generate12();
+      setMnemonic(mnemonic);
+      save(keyName, mnemonic.toString());
+      save(keyAccount,"facility")
+      props.setLogin(true);
+    } catch (err: any) {
+      Alert.alert(err.toString());
+    }
+  }
+  async function fromStringUser() {
     try {
       const mnemonic = await Mnemonic.fromString(mnemonicStr);
       setMnemonic(mnemonic);
-      save("key",mnemonic.toString())
-      props.setLogin(true)
+      save(keyName, mnemonic.toString());
+      save(keyAccount,"user")
+      props.setLogin(true);
+    } catch (err: any) {
+      Alert.alert(err.toString());
+      setError(true);
+    }
+  }
+  async function fromStringFacility() {
+    try {
+      const mnemonic = await Mnemonic.fromString(mnemonicStr);
+      setMnemonic(mnemonic);
+      save(keyName, mnemonic.toString());
+      save(keyAccount,"facility")
+      props.setLogin(true);
     } catch (err: any) {
       Alert.alert(err.toString());
       setError(true);
@@ -113,15 +139,16 @@ const Login = (props:props) => {
       <Text>Enter Mnemonic</Text>
       <Input
         value={mnemonicStr}
-        onChangeText={(text) => setMnemonicStr(text)}>
+        onChangeText={(text) => setMnemonicStr(text)}
+      ></Input>
 
-      </Input>
-
-      <Button onPress={fromString}>Make from Mnemonic</Button>
-      <Button onPress={createNew}>Generate New</Button>
-
+      <HStack>
+        <Button onPress={fromStringUser}>User from Mnemonic</Button>
+        <Button onPress={fromStringFacility}>Facility from Mnemonic</Button>
+      </HStack>
+      <Button onPress={createNewUser}>Create New User</Button>
+      <Button onPress={createNewFacility}>Create New Facility</Button>
       {error ? <Text>Error</Text> : <></>}
-      
     </VStack>
   );
 };

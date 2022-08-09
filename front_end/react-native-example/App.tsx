@@ -8,11 +8,14 @@ import { Client, AccountId, PrivateKey, Mnemonic } from "@hashgraph/sdk";
 import { NativeBaseProvider, Stack } from "native-base";
 import Login from "./screens/Login";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import RecyclingFacility from "./screens/RecyclingFacility";
 import Account from "./screens/Account";
 import { NavigationContainer } from "@react-navigation/native";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as SecureStore from "expo-secure-store";
+import RecyclingFacility from "./screens/Resycle/RecyclingFacility";
+import User from "./screens/User/User";
+import Selection from "./screens/Selection";
+import { keyName } from "./constants";
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -27,27 +30,33 @@ const styles = StyleSheet.create({
 const App = () => {
   const [login, setLogin] = useState(false)
   const Tab = createBottomTabNavigator();
+
   async function getValueFor(key: any) {
     let result = await SecureStore.getItemAsync(key);
-    if (result) {
-      //alert("🔐 Here's your value 🔐 \n" + result);
-    } else {
-      //alert("No values stored under that key.");
-    }
+    return result
   }
   useEffect(()=>{
-    getValueFor("key").then((value)=>{
+    getValueFor(keyName).then((value)=>{
       if(value===undefined){
-
-      }else{
+        console.log("undefined")
+      }
+      if(value===null){
+        console.log("null")
+      }
+      else{
+        console.log("else")
+        
         setLogin(true)
       }
+      console.log(value)
     })
+    
 
-  })
+  },[])
   return (
     <NativeBaseProvider>
-      {login?(<NavigationContainer>
+      {login?(
+      <NavigationContainer>
         <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
@@ -66,7 +75,8 @@ const App = () => {
           tabBarActiveTintColor: 'black',
           tabBarInactiveTintColor: 'gray',
         })}>
-          <Tab.Screen name="Home" component={RecyclingFacility} />
+          <Tab.Screen name="Home" component={Selection} />
+          
           <Tab.Screen name="Account" component={Account} />
         </Tab.Navigator>
       </NavigationContainer>):<SafeAreaView><Login setLogin={setLogin}/></SafeAreaView>}
