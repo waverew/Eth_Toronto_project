@@ -1,8 +1,8 @@
-import { Text } from "native-base";
-
 const RecyclingFacility = () =>{
     return(
-        <Text>Facility</Text>
+        <div>
+            
+        </div>
     )
 }
 export default RecyclingFacility;
