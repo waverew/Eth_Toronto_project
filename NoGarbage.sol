@@ -16,6 +16,7 @@ contract NoGarbage{
     struct Users{
         address user;
         string zipCode;
+        uint earning;
         uint index;
         UserSubmissions[] submissions;
     }
@@ -23,6 +24,7 @@ contract NoGarbage{
     
     struct CompanyOrder{
         Comodity comodity;
+        uint sold;
         uint submissionsCounter;
         mapping(uint=>UserSubmissions) userSubmissionTracking;
     }
@@ -61,11 +63,20 @@ contract NoGarbage{
         uint counter = companies[_company].orders[_id].submissionsCounter;
         _userOrder.index = counter;
         companies[_company].orders[_id].userSubmissionTracking[counter] = _userOrder;
-        //
+        uint soldAmount = _userOrder.comodityValues.amount*_userOrder.comodityValues.price;
+        companies[_company].orders[_id].sold+=soldAmount;
         users[msg.sender].index+=1;
+        users[msg.sender].earning+=soldAmount;
         users[msg.sender].submissions.push(_userOrder);
     }
 
+    function payBill(bytes32 orderId) public payable {
+        require(msg.value>=companies[msg.sender].orders[orderId].sold);
+    }
 
-
+    function claimEarnings(uint amount) public payable{
+        require(address(this).balance>=amount,"Funds Not Avialable");
+        require(amount<=users[msg.sender].earning,"Amount claimed is more than earnings");
+        payable(msg.sender).transfer(amount);
+    }
 }

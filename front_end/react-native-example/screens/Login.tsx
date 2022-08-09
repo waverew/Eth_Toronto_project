@@ -16,10 +16,9 @@ import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 
 interface props {
-  navigation: any;
-  route: any;
+  setLogin:any
 }
-const Login = (props: props) => {
+const Login = (props:props) => {
   async function save(key: any, value: any) {
     await SecureStore.setItemAsync(key, value);
   }
@@ -40,22 +39,27 @@ const Login = (props: props) => {
 
   const [mnemonicStr, setMnemonicStr] = useState("");
   const [error, setError] = useState(false);
-
+  const operatorId = AccountId.fromString("0.0.47439");
+  const operatorKey = PrivateKey.fromString(
+    "302e020100300506032b6570042204208f4014a3f7f7a6c7147070da98d88f9cea074c13ed0554783471825d801888cf"
+  );
+  const client = Client.forTestnet().setOperator(operatorId, operatorKey);
+  const [mnemonic, setMnemonic] = useState<Mnemonic | null>(null);
   useEffect(() => {
     const init = async () => {
       try {
         const response = await new TransferTransaction()
-          .addHbarTransfer(props.route.param.operatorId, -1)
+          .addHbarTransfer(operatorId, -1)
           .addHbarTransfer("0.0.3", 1)
-          .execute(props.route.param.client);
+          .execute(client);
         setTransaction(response);
       } catch (err: any) {
         Alert.alert(err.toString());
       }
       try {
         const info = await new AccountInfoQuery()
-          .setAccountId(props.route.param.operatorId)
-          .execute(props.route.param.client);
+          .setAccountId(operatorId)
+          .execute(client);
 
         setInfo(info);
       } catch (err: any) {
@@ -64,30 +68,31 @@ const Login = (props: props) => {
 
       try {
         const balance = await new AccountBalanceQuery()
-          .setAccountId(props.route.param.operatorId)
-          .execute(props.route.param.client);
+          .setAccountId(operatorId)
+          .execute(client);
 
         setBalance(balance);
       } catch (err: any) {
         Alert.alert(err.toString());
       }
 
-      try {
-        const mnemonic = await Mnemonic.generate12();
+      // try {
+      //   const mnemonic = await Mnemonic.generate12();
 
-        props.route.param.setMnemonic(mnemonic);
-      } catch (err: any) {
-        Alert.alert(err.toString());
-      }
+      //   props.route.param.setMnemonic(mnemonic);
+      // } catch (err: any) {
+      //   Alert.alert(err.toString());
+      // }
     };
-    //init();
+    init();
   }, []);
   async function createNew() {
     try {
       const mnemonic = await Mnemonic.generate12();
 
-      props.route.param.setMnemonic(mnemonic);
+      setMnemonic(mnemonic);
       save("key",mnemonic.toString())
+      props.setLogin(true)
     } catch (err: any) {
       Alert.alert(err.toString());
     }
@@ -95,7 +100,9 @@ const Login = (props: props) => {
   async function fromString() {
     try {
       const mnemonic = await Mnemonic.fromString(mnemonicStr);
-      props.route.param.setMnemonic(mnemonic);
+      setMnemonic(mnemonic);
+      save("key",mnemonic.toString())
+      props.setLogin(true)
     } catch (err: any) {
       Alert.alert(err.toString());
       setError(true);
@@ -113,16 +120,7 @@ const Login = (props: props) => {
       <Button onPress={createNew}>Genrate New</Button>
 
       {error ? <Text>Error</Text> : <></>}
-      {transaction && (
-        <Text testID="transactionId">
-          TransactionId: {transaction.transactionId.toString()}
-        </Text>
-      )}
-      {info && <Text testID="info">Info: {info.accountId.toString()}</Text>}
-
-      {balance && (
-        <Text testID="balance">Balance: {balance.hbars.toString()}</Text>
-      )}
+      
     </VStack>
   );
 };
