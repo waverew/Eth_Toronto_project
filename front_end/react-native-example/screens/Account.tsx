@@ -6,6 +6,7 @@ const Account = () => {
   const [privateKey, setPrivateKey] = useState("");
   const [id, setId] = useState("");
   const [zip, setZip] = useState("");
+  const [account, setAccount] = useState("");
   async function getValueFor(key: any) {
     let result = await SecureStore.getItemAsync(key);
     return result;
@@ -17,14 +18,18 @@ const Account = () => {
     const id = await getValueFor(keyId) as string;
     const privateKey = await getValueFor(keyPrivate) as string;
     const zip = await getValueFor(keyZip) as string;
+    const acc = await getValueFor(keyAccount) as string;
     setId(id)
     setPrivateKey(privateKey)
     setZip(zip)
+    setAccount(acc)
   }
   async function saveValues(){
     save(keyId, id)
     save(keyZip, zip)
     save(keyPrivate, privateKey)
+    save(keyAccount, account)
+    setAccount(account)
   }
   useEffect(()=>{
     loadData()
@@ -42,6 +47,8 @@ const Account = () => {
       
         <Text>Zip</Text>
         <Input value={zip} onChangeText={setZip}></Input>
+        <Text>account</Text>
+        <Input value={account} onChangeText={setAccount}></Input>
       
       <Center>
         <Button onPress={saveValues}>Save</Button>
