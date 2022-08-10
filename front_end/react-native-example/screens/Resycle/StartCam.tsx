@@ -1,11 +1,32 @@
+import { VStack, Text, Input } from "native-base";
+import { useState } from "react";
+import DropDownPicker from "react-native-dropdown-picker";
+
+
+
 const StartCam = () => {
+  const [open, setOpen] = useState(false);
+    const [value, setValue] = useState(null);
+    const [items, setItems] = useState([
+      {label: 'Aluminum', value: 'aluminum'},
+      {label: 'Plastic', value: 'plastic'}
+    ]);
     return (
-    <div>
-        <form action="">
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-        Start new campaign
-        </button>
-        </form>
-    </div>)
+    <VStack space="1">
+        <Text>
+            Select what you want to gather
+        </Text>
+        <DropDownPicker
+        open={open}
+        value={value}
+        items={items}
+        setOpen={setOpen}
+        setValue={setValue}
+        setItems={setItems}
+      />
+        
+    </VStack>
+    )
 }
+
 export default StartCam;
