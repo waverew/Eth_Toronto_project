@@ -52,22 +52,26 @@ contract NoGarbage{
         }
     }
 
-    function addComodityForSubmission(bytes32 _id, Comodity memory _comodity) public {
+    function addComodityForSubmission(bytes32 _id, uint _price, uint _amount, string memory _typeOfComodity) public {
         companies[msg.sender].ordersArray.push(_id);
-        companies[msg.sender].orders[_id].comodity = _comodity;
+        companies[msg.sender].orders[_id].comodity.price = _price;
+        companies[msg.sender].orders[_id].comodity.amount =_amount;
+        companies[msg.sender].orders[_id].comodity.typeOfComodity =_typeOfComodity;
         companies[msg.sender].ordersCounter+=1;
     }
 
-    function addUserSubmission(address _company, bytes32 _id, UserSubmissions memory _userOrder) public {
+    function addUserSubmission(address _company, bytes32 _id,uint _price, uint _amount, string memory _typeOfCommodity) public {
         companies[_company].orders[_id].submissionsCounter+=1;
         uint counter = companies[_company].orders[_id].submissionsCounter;
-        _userOrder.index = counter;
-        companies[_company].orders[_id].userSubmissionTracking[counter] = _userOrder;
-        uint soldAmount = _userOrder.comodityValues.amount*_userOrder.comodityValues.price;
+        companies[_company].orders[_id].userSubmissionTracking[counter].index = counter;
+        companies[_company].orders[_id].userSubmissionTracking[counter].user = msg.sender;
+        companies[_company].orders[_id].userSubmissionTracking[counter].comodityValues.amount = _amount;
+        companies[_company].orders[_id].userSubmissionTracking[counter].comodityValues.typeOfComodity = _typeOfCommodity;
+        companies[_company].orders[_id].userSubmissionTracking[counter].comodityValues.price = _price;
+        uint soldAmount = _amount*_price;
         companies[_company].orders[_id].sold+=soldAmount;
         users[msg.sender].index+=1;
         users[msg.sender].earning+=soldAmount;
-        users[msg.sender].submissions.push(_userOrder);
     }
 
     function payBill(bytes32 orderId) public payable {

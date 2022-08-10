@@ -1,4 +1,4 @@
-import { hethers } from "@hashgraph/hethers";
+import { BigNumber, hethers } from "@hashgraph/hethers";
 import { VStack, Text, Input, Button, Select, CheckIcon } from "native-base";
 import { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
@@ -51,6 +51,13 @@ const RecyclingFacility = () => {
     let result = (await SecureStore.getItemAsync(key)) as string;
     return result;
   }
+  function toHex(str:string) {
+    var result = '';
+    for (var i=0; i<str.length; i++) {
+      result += str.charCodeAt(i).toString(16);
+    }
+    return result;
+  }
   async function submitOrder() {
     try {
       const operatorId = await getValueFor(keyId);
@@ -64,21 +71,31 @@ const RecyclingFacility = () => {
       const wallet = new hethers.Wallet(eoaAccount, provider);
       const abi = [
         "function register(bool _isCompany, string _zipCode) public",
-        "function addComodityForSubmission(bytes32 _id, Comodity _comodity) public",
-        "function addUserSubmission(address _company, bytes32 _id, UserSubmissions _userOrder) public",
+        "function addComodityForSubmission(bytes32 _id, uint _price, uint _amount, string memory _typeOfComodity)",
+        "function addUserSubmission(address _company, bytes32 _id,uint _price, uint _amount, string memory _typeOfCommodity) public",
         "function payBill(bytes32 orderId) public payable",
         "function claimEarnings(uint amount) public payable",
       ];
 
       // Create a ContractFactory object
       const contract = new hethers.Contract(
-        "0x0000000000000000000000000000000002da4f47",
+        "0x0000000000000000000000000000000002da5148",
         abi,
         wallet
       );
+      interface com {
+        amount:Number;
+        type:string;
+        price:Number;
+      }
+      const hex = toHex(bytesId)
+      console.log(hex)
+      const k:com = {amount:Number(amount), price:Number(price), type:service}
       const int = await contract.addComodityForSubmission(
-        bytesId,
-        [amount, service, price],
+        '0x'+hex,
+        BigNumber.from(price),
+        BigNumber.from(amount),
+        service,
         {
           gasLimit: 300000,
         }
@@ -90,14 +107,15 @@ const RecyclingFacility = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          companyName: operatorId,
+          companyName: operatorId.replaceAll('.','_'),
           itemName: service,
+          areaCode:zip,
           sellingPricePerKg: price,
           pickupTimeFrom: pickUpTime,
           pickupTimeTo: pickUpTimeTo,
           days: days,
           campaignDays:campain,
-          orderId: bytesId,
+          orderId: hex,
 
         }),
       });
@@ -114,7 +132,7 @@ const RecyclingFacility = () => {
   return (
     <VStack space="4">
       <Input placeholder="Amount" onChangeText={setAmount}></Input>
-      <Input placeholder="Zip Code" onChangeText={setAmount}></Input>
+      <Input placeholder="Zip Code" onChangeText={setZip}></Input>
       <Input placeholder="price" onChangeText={setprice}></Input>
       <Input placeholder="pickup time" onChangeText={setPickUpTime}></Input>
       <Input
@@ -135,12 +153,12 @@ const RecyclingFacility = () => {
         mt={1}
         onValueChange={(itemValue) => setService(itemValue)}
       >
-        <Select.Item label="Glass Bottles" value="GB" />
-        <Select.Item label="Aluminium Cans" value="AC" />
-        <Select.Item label="Electonics" value="E" />
-        <Select.Item label="Cardboard" value="CB" />
+        <Select.Item label="GlassBottles" value="GlassBottles" />
+        <Select.Item label="AluminiumCans" value="AluminiumCans" />
+        <Select.Item label="Electonics" value="Electonics" />
+        <Select.Item label="Cardboard" value="Cardboard" />
       </Select>
-      <Button>Submit</Button>
+      <Button onPress={submitOrder}>Submit</Button>
     </VStack>
   );
 };

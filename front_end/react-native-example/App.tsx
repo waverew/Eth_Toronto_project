@@ -65,7 +65,7 @@ const App = () => {
           tabBarIcon: ({ focused, color, size }) => {
             let iconName:string="";
 
-            if (route.name === 'Schedule') {
+            if (route.name === 'Update') {
               iconName = focused
                 ? 'calendar-sharp'
                 : 'calendar-outline';
@@ -80,8 +80,7 @@ const App = () => {
           tabBarActiveTintColor: 'black',
           tabBarInactiveTintColor: 'gray',
         })}>
-          <Tab.Screen name="Schedule" component={Selection} />
-          <Tab.Screen name="Order" component={Orders}/>
+          <Tab.Screen name="Update" component={Selection} />
           <Tab.Screen name="Account" component={Account} />
         </Tab.Navigator>
       </NavigationContainer>):<SafeAreaView><Login setLogin={setLogin}/></SafeAreaView>}
