@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import User from "./User/User";
 import RecyclingFacility from "./Resycle/RecyclingFacility";
+import { keyZip, keyPrivate, keyId, keyAccount } from "../constants";
 const Selection = () => {
   const [isUser, setIsUser] = useState(false);
   async function getValueFor(key: any) {
@@ -10,10 +11,12 @@ const Selection = () => {
     return result;
   }
   useEffect(() => {
-    getValueFor("account").then((value) => {
+    getValueFor(keyAccount).then((value) => {
       if (value == "user") {
+
         setIsUser(true);
       } else {
+        console.log("facility")
         setIsUser(false);
       }
     });

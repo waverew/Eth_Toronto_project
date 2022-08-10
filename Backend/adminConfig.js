@@ -61,15 +61,21 @@ app.post('/setUserData', (req, res) => {
 
 });
 //get the list of items user had set
-/*app.get('/getUserData', async (req,res) =>{
+app.get('/getUserData', async (req,res) =>{
 const walletId = req.body.walletId;
-const userName = req.body.userName;
-var refPath;
+var refPath = "userData";
 //get specific user data
-if(walletId !== undefined && userName !== undefined){
+if(walletId != undefined){
+    refPath += "/" + walletId;
 
 }
-});*/
+ref.child(refPath).once('value')
+    .then(function(snapshot) {
+      console.log( snapshot.val() )
+      res.send(snapshot.val());
+  });
+
+});
 //company sets the list of items
 //companyName -> ItemName -> details
 app.post('/setCompanyItemList', (req, res) => {
