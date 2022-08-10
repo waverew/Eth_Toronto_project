@@ -30,6 +30,7 @@ const ref = db.ref('/server/saving-data/fireblog');
 // const itemListRef = ref.child('itemList');
 const customerAddressRef = ref.child('customerAddress');
 
+var userData;
 var itemListData;
 var customerAddressData;
 
@@ -40,6 +41,35 @@ var customerAddressData;
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json())
 
+//user sets the list of items 
+//userName -
+app.post('/setUserData', (req,res) => {
+userData = JSON.parse(JSON.stringify(req.body));
+const userName = req.body.userName;
+const walletId = req.body.walletId;
+const userDataRef = ref.child("userData/" + walletId);
+userDataRef.set({
+userName: userData.userName,
+itemName: userData.itemName,
+streetName: userData.streetName,
+areaCode: userData.areaCode,
+streetNumber: userData.streetNumber
+});
+res.sendStatus(200);
+
+
+
+});
+//get the list of items user had set
+/*app.get('/getUserData', async (req,res) =>{
+const walletId = req.body.walletId;
+const userName = req.body.userName;
+var refPath;
+//get specific user data
+if(walletId !== undefined && userName !== undefined){
+
+}
+});*/
 //company sets the list of items
 //companyName -> ItemName -> details
 app.post('/setItemListData', (req,res) => {
@@ -51,6 +81,7 @@ app.post('/setItemListData', (req,res) => {
   const itemName = req.body.itemName;
   const areaCode = req.body.areaCode;
   const itemNameRef = ref.child(companyName + "/" + itemName + "/" + areaCode);
+  
   // console.log("2");
   // console.log(itemListData);
   itemNameRef.set({
