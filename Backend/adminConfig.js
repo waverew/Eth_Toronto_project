@@ -47,10 +47,11 @@ app.post('/setItemListData', (req,res) => {
   // console.log(req.body.itemName);
   // console.log(req.json);
   itemListData = JSON.parse(JSON.stringify(req.body));
+
   const companyName = req.body.companyName;
   const itemName = req.body.itemName;
   const areaCode = req.body.areaCode;
-  const itemNameRef = ref.child(companyName + "/" + itemName + "/" + areaCode);
+  const itemNameRef = ref.child("companyData/" + companyName + "/" + itemName + "/" + areaCode);
   // console.log("2");
   // console.log(itemListData);
   itemNameRef.set({
@@ -65,28 +66,35 @@ app.post('/setItemListData', (req,res) => {
   });
   res.sendStatus(200);
 });
-//get the list of items that company has set
+
+//get the list of items that company has put
 app.get('/getItemListData', async (req,res) => {
   const companyName = req.body.companyName;
   const itemName = req.body.itemName;
-  var refPath;
-  //pull data for specific company, itemName
-if(companyName != undefined && itemName != undefined){
-  refPath = compnayName + "/" + itemName;
-  
-}
-  //pull everything
-  else{
-    
+  const areaCode = req.body.areaCode;
+  var refPath = "companyData";
+
+  if(companyName != undefined){
+    if(itemName != undefined){
+      if(areaCode != undefined){
+        refPath += "/" + companyName + "/" + itemName + "/" + areaCode;       
+      }
+      else {
+        refPath += "/" + companyName + "/" + itemName;
+      }
+    }
+    else{
+      refPath += "/" + companyName;
+    }
   }
-
-  database.ref('customPath').once('value')
-.then(function(snapshot) {
-    console.log( snapshot.val() )
-})
-
-  console.log(itemListRes);
-  res.send(itemListRes);
+  ref.child(refPath).once('value')
+    .then(function(snapshot) {
+      console.log( snapshot.val() )
+      res.send(snapshot.val());
+  });
+  
+  // console.log(itemListRes);
+  // res.send(itemListRes);
 });
 
 
