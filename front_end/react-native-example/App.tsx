@@ -15,7 +15,7 @@ import * as SecureStore from "expo-secure-store";
 import RecyclingFacility from "./screens/Resycle/RecyclingFacility";
 import User from "./screens/User/User";
 import Selection from "./screens/Selection";
-import { keyName } from "./constants";
+import { keyAccount } from "./constants";
 import Orders from "./screens/Order/Orders";
 const styles = StyleSheet.create({
   container: {
@@ -37,7 +37,7 @@ const App = () => {
     return result
   }
   useEffect(()=>{
-    getValueFor(keyName).then((value)=>{
+    getValueFor(keyAccount).then((value)=>{
       if(value===undefined){
         console.log("undefined")
       }

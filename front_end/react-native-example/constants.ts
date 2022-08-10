@@ -1,2 +1,5 @@
-export const keyName="keyMen"
-export const keyAccount="account"
+export const keyName="keyMenmo"
+export const keyAccount="accountA"
+export const keyId="idua"
+export const keyPrivate = "privateKeya"
+export const keyZip = "zipcodea"
