@@ -25,8 +25,8 @@ const User = () => {
       const wallet = new hethers.Wallet(eoaAccount, provider);
       const abi = [
         "function register(bool _isCompany, string _zipCode) public",
-        "function addComodityForSubmission(bytes32 _id, Comodity _comodity) public",
-        "function addUserSubmission(address _company, bytes32 _id, UserSubmissions _userOrder) public",
+        "function addComodityForSubmission(bytes32 _id, uint _price, uint _amount, string memory _typeOfComodity)",
+        "function addUserSubmission(address _company, bytes32 _id,uint _price, uint _amount, string memory _typeOfCommodity) public",
         "function payBill(bytes32 orderId) public payable",
         "function claimEarnings(uint amount) public payable",
       ];

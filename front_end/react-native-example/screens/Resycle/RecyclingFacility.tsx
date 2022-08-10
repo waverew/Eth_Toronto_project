@@ -119,6 +119,7 @@ const RecyclingFacility = () => {
 
         }),
       });
+      alert("Added The Commodity")
       console.log(int);
     } catch (err) {
       console.log(err);

@@ -115,7 +115,7 @@ const Login = (props: props) => {
     save(keyId, idStr);
     save(keyPrivate, keyStr);
     save(keyAccount, "user");
-    save(keyZip, idStr);
+    save(keyZip, zipCode);
     props.setLogin(true);
   }
   async function createNewFacility() {
@@ -148,7 +148,7 @@ const Login = (props: props) => {
       } catch (err) {
         console.log(err)
       }
-      save(keyZip, idStr);
+      save(keyZip, zipCode);
       save(keyId, idStr);
       save(keyPrivate, keyStr);
       save(keyAccount, "facility");
