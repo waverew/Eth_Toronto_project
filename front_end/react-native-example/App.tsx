@@ -16,6 +16,7 @@ import RecyclingFacility from "./screens/Resycle/RecyclingFacility";
 import User from "./screens/User/User";
 import Selection from "./screens/Selection";
 import { keyName } from "./constants";
+import Orders from "./screens/Order/Orders";
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -62,12 +63,14 @@ const App = () => {
           tabBarIcon: ({ focused, color, size }) => {
             let iconName:string="";
 
-            if (route.name === 'Home') {
+            if (route.name === 'Schedule') {
               iconName = focused
-                ? 'ios-home'
-                : 'ios-home-outline';
+                ? 'calendar-sharp'
+                : 'calendar-outline';
             } else if (route.name === 'Account') {
               iconName = focused ? 'person-circle' : 'person-circle-outline';
+            }else if (route.name === 'Order') {
+              iconName = focused ? 'add-circle' : 'add-circle-outline';
             }
 
             return <Ionicons name={iconName} size={size} color={color} />;
@@ -75,8 +78,8 @@ const App = () => {
           tabBarActiveTintColor: 'black',
           tabBarInactiveTintColor: 'gray',
         })}>
-          <Tab.Screen name="Home" component={Selection} />
-          
+          <Tab.Screen name="Schedule" component={Selection} />
+          <Tab.Screen name="Order" component={Orders}/>
           <Tab.Screen name="Account" component={Account} />
         </Tab.Navigator>
       </NavigationContainer>):<SafeAreaView><Login setLogin={setLogin}/></SafeAreaView>}
