@@ -117,29 +117,6 @@ const Login = (props: props) => {
     save(keyAccount, "user");
     save(keyZip, idStr);
     props.setLogin(true);
-    // const privateKey = await PrivateKey.generateECDSAAsync();
-    // const publicKey = privateKey.publicKey;
-    // const transaction = new AccountCreateTransaction()
-    //   .setKey(privateKey.publicKey)
-    //   .setInitialBalance(new Hbar(1000));
-    // //Sign the transaction with the client operator private key and submit to a Hedera network
-    // try{
-    // const txResponse = await transaction.execute(client);
-    // //Request the receipt of the transaction
-    // //const receipt = await txResponse.getReceipt(client);
-    // //Get the account ID
-    // //const newAccountId = receipt.accountId;
-    // //save(keyId, newAccountId)
-    // }
-    // catch(err){
-    //   console.log(err)
-    // }
-    // setMnemonic(mnemonic);
-    // ;
-    // save(keyPublic, publicKey);
-    // save(keyAccount, "user");
-
-    //props.setLogin(true);
   }
   async function createNewFacility() {
     
@@ -159,7 +136,6 @@ const Login = (props: props) => {
           "function claimEarnings(uint amount) public payable",
         ];
 
-        // Create a ContractFactory object
         const contract = new hethers.Contract(
           "0x0000000000000000000000000000000002da4f47",
           abi,
@@ -176,7 +152,7 @@ const Login = (props: props) => {
       save(keyId, idStr);
       save(keyPrivate, keyStr);
       save(keyAccount, "facility");
-    
+      props.setLogin(true);
   }
 
   return (

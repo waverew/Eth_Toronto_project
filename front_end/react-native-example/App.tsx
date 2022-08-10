@@ -43,8 +43,10 @@ const App = () => {
       }
       if(value===null){
         console.log("null")
+      }else if(value=="facility"){
+
       }
-      else{
+      else if (value=="user"){
         console.log("else")
         
         setLogin(true)
