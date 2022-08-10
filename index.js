@@ -40,32 +40,30 @@ async function main() {
 		.setBytecode(contractBytecode);
 	
 
-// 	//Sign the transaction with the client operator key and submit to a Hedera network
+	//Sign the transaction with the client operator key and submit to a Hedera network
 	const txResponse =await contractCreate.execute(client);
 
-// 	//Get the receipt of the transaction
-	
-
+	//Get the receipt of the transaction
+	console.log(txResponse)
 	const receipt = await txResponse.getReceipt(client);
-	
 	const bytecodeFileId = receipt.fileId;
-	console.log(receipt)
+	//console.log(receipt)
 	console.log(receipt.contractId)
 	console.log(receipt.contractId.toSolidityAddress())
 	
-// 	// // Instantiate the smart contract
-// 	const contractInstantiateTx = new ContractCreateTransaction()
-// 		.setBytecodeFileId(bytecodeFileId)
-// 		.setGas(100000)
-// 		// .setConstructorParameters(
-// 		// 	new ContractFunctionParameters().addString("Alice").addUint256(111111)
-// 		// );
-// 	const contractInstantiateSubmit = await contractInstantiateTx.execute(client);
-// 	const contractInstantiateRx = await contractInstantiateSubmit.getReceipt(client);
-// 	const contractId = contractInstantiateRx.contractId;
-// 	const contractAddress = contractId.toSolidityAddress();
-// 	console.log(`- The smart contract ID is: ${contractId} \n`);
-// 	console.log(`- The smart contract ID in Solidity format is: ${contractAddress} \n`);
+	// // Instantiate the smart contract
+	const contractInstantiateTx = new ContractCreateTransaction()
+		.setBytecodeFileId(bytecodeFileId)
+		.setGas(100000)
+		// .setConstructorParameters(
+		// 	new ContractFunctionParameters().addString("Alice").addUint256(111111)
+		// );
+	const contractInstantiateSubmit = await contractInstantiateTx.execute(client);
+	const contractInstantiateRx = await contractInstantiateSubmit.getReceipt(client);
+	const contractId = contractInstantiateRx.contractId;
+	const contractAddress = contractId.toSolidityAddress();
+	console.log(`- The smart contract ID is: ${contractId} \n`);
+	console.log(`- The smart contract ID in Solidity format is: ${contractAddress} \n`);
 
 // 	// // Query the contract to check changes in state variable
 // 	// const contractQueryTx = new ContractCallQuery()
