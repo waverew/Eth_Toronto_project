@@ -38,24 +38,24 @@ var customerAddressData;
 
 //middlewares
 // app.use(express.static('public'));
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json())
 
 //user sets the list of items 
 //userName -
-app.post('/setUserData', (req,res) => {
-userData = JSON.parse(JSON.stringify(req.body));
-const userName = req.body.userName;
-const walletId = req.body.walletId;
-const userDataRef = ref.child("userData/" + walletId);
-userDataRef.set({
-userName: userData.userName,
-itemName: userData.itemName,
-streetName: userData.streetName,
-areaCode: userData.areaCode,
-streetNumber: userData.streetNumber
-});
-res.sendStatus(200);
+app.post('/setUserData', (req, res) => {
+  userData = JSON.parse(JSON.stringify(req.body));
+  // const userName = req.body.userName;
+  const walletId = req.body.walletId;
+  const userDataRef = ref.child("userData/" + walletId);
+  userDataRef.set({
+    userName: userData.userName,
+    itemName: userData.itemName,
+    streetName: userData.streetName,
+    areaCode: userData.areaCode,
+    streetNumber: userData.streetNumber
+  });
+  res.sendStatus(200);
 
 
 
@@ -78,16 +78,17 @@ ref.child(refPath).once('value')
 });
 //company sets the list of items
 //companyName -> ItemName -> details
-app.post('/setItemListData', (req,res) => {
+app.post('/setItemListData', (req, res) => {
   // console.log("1");
   // console.log(req.body.itemName);
   // console.log(req.json);
   itemListData = JSON.parse(JSON.stringify(req.body));
 
-  const companyName = req.body.companyName;
-  const itemName = req.body.itemName;
-  const areaCode = req.body.areaCode;
-  const itemNameRef = ref.child("companyData/" + companyName + "/" + itemName + "/" + areaCode);
+  const companyName = itemListData.companyName;
+  const itemName = itemListData.itemName;
+  const areaCode = itemListData.areaCode;
+  const orderId = itemListData.orderId;
+  const itemNameRef = ref.child("companyData/" + companyName + "/" + itemName + "/" + areaCode + "/" + orderId);
   // console.log("2");
   // console.log(itemListData);
   itemNameRef.set({
@@ -99,58 +100,83 @@ app.post('/setItemListData', (req,res) => {
     days: itemListData.days,  //[0,1,2,3,4,5,6] = [S,M,T,W,T,F,S]
     timestampFrom: itemListData.timestampFrom,
     timestampTo: itemListData.timestampTo,
+    // orderId: itemListData.orderId,
   });
   res.sendStatus(200);
 });
 
 //get the list of items that company has put
-app.get('/getItemListData', async (req,res) => {
+app.get('/getItemListData', (req, res) => {
   const companyName = req.body.companyName;
   const itemName = req.body.itemName;
   const areaCode = req.body.areaCode;
+  const orderId = req.body.orderId;
   var refPath = "companyData";
 
-  if(companyName != undefined){
-    if(itemName != undefined){
-      if(areaCode != undefined){
-        refPath += "/" + companyName + "/" + itemName + "/" + areaCode;       
+  if (companyName != undefined) {
+    if (itemName != undefined) {
+      if (areaCode != undefined) {
+        if (orderId != undefined) {
+          refPath += "/" + companyName + "/" + itemName + "/" + areaCode + "/" + orderId;
+        }
+        else {
+          refPath += "/" + companyName + "/" + itemName + "/" + areaCode;
+        }
       }
       else {
         refPath += "/" + companyName + "/" + itemName;
       }
     }
-    else{
+    else {
       refPath += "/" + companyName;
     }
   }
   ref.child(refPath).once('value')
-    .then(function(snapshot) {
-      console.log( snapshot.val() )
+    .then(function (snapshot) {
+      console.log(snapshot.val())
       res.send(snapshot.val());
-  });
-  
+    });
+
   // console.log(itemListRes);
   // res.send(itemListRes);
 });
 
+app.post('/setUserOrderData', (req, res) => {
+  userOrderData = JSON.parse(JSON.stringify(req.body));
 
+  const userId = userOrderData.userId;
+  const orderId = userOrderData.orderId;
 
-app.get('/getAddressData', (req,res) => {
+  const userOrderDataRef = ref.child("userOrderData/" + userId + "/" + orderId);
+
+  userOrderDataRef.set({
+    creationDate: userOrderData.creationDate,
+    weight: userOrderData.weight,
+    status: userOrderData.status,
+    companyName: userOrderData.companyName,
+    rewards: userOrderData.rewards,
+    itemName: userOrderData.itemName,
+  });
+
+  res.sendStatus(200);
+});
+
+app.get('/getAddressData', (req, res) => {
   customerAddressData = JSON.parse(req.body);
-  
-  
-customerAddressRef.set({
-  addressId: customerAddressData.addressId,
-  address: customerAddressData.address,
-  state: customerAddressData.state,
-  city: customerAddressData.city,
-  country: customerAddressData.country,
-  pincode: customerAddressData.pincode,
+
+
+  customerAddressRef.set({
+    addressId: customerAddressData.addressId,
+    address: customerAddressData.address,
+    state: customerAddressData.state,
+    city: customerAddressData.city,
+    country: customerAddressData.country,
+    pincode: customerAddressData.pincode,
+  });
+
+  console.log(customerAddressData);
 });
 
-console.log(customerAddressData);
-});
-
-app.listen(3000,() => {
+app.listen(3000, () => {
   console.log(`App is running on port 3000`);
 });
