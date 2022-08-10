@@ -72,7 +72,7 @@ if(walletId !== undefined && userName !== undefined){
 });*/
 //company sets the list of items
 //companyName -> ItemName -> details
-app.post('/setItemListData', (req, res) => {
+app.post('/setCompanyItemList', (req, res) => {
   // console.log("1");
   // console.log(req.body.itemName);
   // console.log(req.json);
@@ -82,9 +82,11 @@ app.post('/setItemListData', (req, res) => {
   const itemName = itemListData.itemName;
   const areaCode = itemListData.areaCode;
   const orderId = itemListData.orderId;
+  const campaignDays = itemListData.campaignDays;
+  const _timestampFrom = new Date(Date.now());
+  const _timestampTo = new Date(_timestampFrom);
+  _timestampTo.setDate(_timestampTo.getDate() + Number( campaignDays));
   const itemNameRef = ref.child("companyData/" + companyName + "/" + itemName + "/" + areaCode + "/" + orderId);
-  // console.log("2");
-  // console.log(itemListData);
   itemNameRef.set({
     // itemName: itemListData.itemName,
     sellingPricePerKg: itemListData.sellingPricePerKg,
@@ -92,8 +94,8 @@ app.post('/setItemListData', (req, res) => {
     pickupTimeFrom: itemListData.pickupTimeFrom,
     pickupTimeTo: itemListData.pickupTimeTo,
     days: itemListData.days,  //[0,1,2,3,4,5,6] = [S,M,T,W,T,F,S]
-    timestampFrom: itemListData.timestampFrom,
-    timestampTo: itemListData.timestampTo,
+    timestampFrom: _timestampFrom.toDateString(),
+    timestampTo: _timestampTo.toDateString(),
     // orderId: itemListData.orderId,
   });
   res.sendStatus(200);
