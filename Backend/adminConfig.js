@@ -49,13 +49,16 @@ app.post('/setItemListData', (req,res) => {
   itemListData = JSON.parse(JSON.stringify(req.body));
   const companyName = req.body.companyName;
   const itemName = req.body.itemName;
-  const itemNameRef = ref.child(companyName + "/" + itemName);
+  const areaCode = req.body.areaCode;
+  const itemNameRef = ref.child(companyName + "/" + itemName + "/" + areaCode);
   // console.log("2");
   // console.log(itemListData);
   itemNameRef.set({
     // itemName: itemListData.itemName,
     sellingPricePerKg: itemListData.sellingPricePerKg,
-    areaCode: itemListData.areaCode,
+    // areaCode: itemListData.areaCode,
+    pickupTimeFrom: itemListData.pickupTimeFrom,
+    pickupTimeTo: itemListData.pickupTimeTo,
     days: itemListData.days,  //[0,1,2,3,4,5,6] = [S,M,T,W,T,F,S]
     timestampFrom: itemListData.timestampFrom,
     timestampTo: itemListData.timestampTo,
@@ -64,17 +67,23 @@ app.post('/setItemListData', (req,res) => {
 });
 //get the list of items that company has set
 app.get('/getItemListData', async (req,res) => {
-  const compnayName = req.body.companyName;
+  const companyName = req.body.companyName;
   const itemName = req.body.itemName;
-
+  var refPath;
   //pull data for specific company, itemName
-  if(compnayName != undefined && itemName != undefined){
-
-  }
+if(companyName != undefined && itemName != undefined){
+  refPath = compnayName + "/" + itemName;
+  
+}
   //pull everything
   else{
-
+    
   }
+
+  database.ref('customPath').once('value')
+.then(function(snapshot) {
+    console.log( snapshot.val() )
+})
 
   console.log(itemListRes);
   res.send(itemListRes);

@@ -40,19 +40,18 @@ async function main() {
 	
 
 	//Sign the transaction with the client operator key and submit to a Hedera network
-	const txResponse =await contractCreate.execute(client);
+	const txResponse = contractCreate.execute(client);
 
 	//Get the receipt of the transaction
-	console.log(txResponse)
-	const receipt = await txResponse.getReceipt(client);
-	const bytecodeFileId = receipt.fileId;
+	const receipt = await (await txResponse).getReceipt(client);
+
 	//console.log(receipt)
 	console.log(receipt.contractId)
 	console.log(receipt.contractId.toSolidityAddress())
 	
 	// // Instantiate the smart contract
 	const contractInstantiateTx = new ContractCreateTransaction()
-		.setBytecodeFileId(bytecodeFileId)
+		.setBytecodeFileId(contractBytecode)
 		.setGas(100000)
 		// .setConstructorParameters(
 		// 	new ContractFunctionParameters().addString("Alice").addUint256(111111)
