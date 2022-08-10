@@ -108,7 +108,7 @@ app.post('/setCompanyItemList', (req, res) => {
 });
 
 //get the list of items that company has put
-app.get('/getItemListData', (req, res) => {
+app.post('/getCompanyItemList', (req, res) => {
   const companyName = req.body.companyName;
   const itemName = req.body.itemName;
   const areaCode = req.body.areaCode;
@@ -142,6 +142,36 @@ app.get('/getItemListData', (req, res) => {
   // console.log(itemListRes);
   // res.send(itemListRes);
 });
+
+app.post('/getCompanyItemListPerAreaCode', (req, res) => {
+  const itemName = req.body.itemName;
+  const areaCode = req.body.areaCode;
+  ref.child("companyData").once('value')
+    .then(function (snapshot) {
+
+      const result = JSON.parse(JSON.stringify(snapshot.val()));
+      
+      var order = new Array();
+      for(var company in result){
+        var obj1 = result[company];
+        for(var item in obj1){
+          if(item == itemName){
+            var obj2 = obj1[itemName];
+            for(var area in obj2){
+              if(area == areaCode){
+                var obj = {};
+                obj[company] = result[company];
+                
+                order.push(obj);
+              }             
+            }
+          }
+        }
+      }
+      console.log(JSON.stringify(order));
+      res.send(order);
+    });
+  });
 
 app.post('/setUserOrderData', (req, res) => {
   userOrderData = JSON.parse(JSON.stringify(req.body));
