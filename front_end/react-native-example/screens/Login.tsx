@@ -1,3 +1,4 @@
+import { hethers } from "@hashgraph/hethers";
 import {
   Client,
   AccountId,
@@ -9,13 +10,15 @@ import {
   TransactionResponse,
   AccountInfo,
   AccountBalance,
+  AccountCreateTransaction,
+  Hbar,
 } from "@hashgraph/sdk";
 import * as SecureStore from "expo-secure-store";
-import { Input, VStack, Text, Button, HStack } from "native-base";
+import { Input, VStack, Text, Button, HStack, Center } from "native-base";
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 
-import {keyName, keyAccount} from '../constants' 
+import { keyZip, keyPrivate, keyId, keyAccount } from "../constants";
 interface props {
   setLogin: any;
 }
@@ -24,25 +27,19 @@ const Login = (props: props) => {
     await SecureStore.setItemAsync(key, value);
   }
 
-  async function getValueFor(key: any) {
-    let result = await SecureStore.getItemAsync(key);
-    if (result) {
-      alert("🔐 Here's your value 🔐 \n" + result);
-    } else {
-      alert("No values stored under that key.");
-    }
-  }
   const [transaction, setTransaction] = useState<TransactionResponse | null>(
     null
   );
   const [info, setInfo] = useState<AccountInfo | null>(null);
   const [balance, setBalance] = useState<AccountBalance | null>(null);
 
-  const [mnemonicStr, setMnemonicStr] = useState("");
+  const [idStr, setIdStr] = useState("");
+  const [keyStr, setKeyStr] = useState("");
+  const [zipCode, setZipCode] = useState("");
   const [error, setError] = useState(false);
-  const operatorId = AccountId.fromString("0.0.47439");
+  const operatorId = AccountId.fromString("0.0.47861614");
   const operatorKey = PrivateKey.fromString(
-    "302e020100300506032b6570042204208f4014a3f7f7a6c7147070da98d88f9cea074c13ed0554783471825d801888cf"
+    "3030020100300706052b8104000a0422042067df6c854cc926d9811d0f2221db056bd99dd5cc64716b7692eee77e0d1b736a"
   );
   const client = Client.forTestnet().setOperator(operatorId, operatorKey);
   const [mnemonic, setMnemonic] = useState<Mnemonic | null>(null);
@@ -89,65 +86,124 @@ const Login = (props: props) => {
   }, []);
   async function createNewUser() {
     try {
-      const mnemonic = await Mnemonic.generate12();
+      const provider = hethers.providers.getDefaultProvider("testnet");
 
-      setMnemonic(mnemonic);
-      save(keyName, mnemonic.toString());
-      save(keyAccount,"user")
-      props.setLogin(true);
-    } catch (err: any) {
-      Alert.alert(err.toString());
-    }
+      const eoaAccount: any = {
+        account: operatorId,
+        privateKey: `0x${operatorKey.toStringRaw()}`, // Convert private key to short format using .toStringRaw()
+      };
+      const wallet = new hethers.Wallet(eoaAccount, provider);
+      const abi = [
+        "function register(bool _isCompany, string _zipCode) public",
+        "function addComodityForSubmission(bytes32 _id, Comodity _comodity) public",
+        "function addUserSubmission(address _company, bytes32 _id, UserSubmissions _userOrder) public",
+        "function payBill(bytes32 orderId) public payable",
+        "function claimEarnings(uint amount) public payable",
+      ];
+
+      // Create a ContractFactory object
+      const contract = new hethers.Contract(
+        "0x0000000000000000000000000000000002da4f47",
+        abi,
+        wallet
+      );
+      const int = await contract.register(false, zipCode, {
+        gasLimit: 300000,
+      });
+      console.log(int);
+    } catch (err) {}
+    save(keyId, idStr);
+    save(keyPrivate, keyStr);
+    save(keyAccount, "user");
+    save(keyZip, idStr);
+    props.setLogin(true);
+    // const privateKey = await PrivateKey.generateECDSAAsync();
+    // const publicKey = privateKey.publicKey;
+    // const transaction = new AccountCreateTransaction()
+    //   .setKey(privateKey.publicKey)
+    //   .setInitialBalance(new Hbar(1000));
+    // //Sign the transaction with the client operator private key and submit to a Hedera network
+    // try{
+    // const txResponse = await transaction.execute(client);
+    // //Request the receipt of the transaction
+    // //const receipt = await txResponse.getReceipt(client);
+    // //Get the account ID
+    // //const newAccountId = receipt.accountId;
+    // //save(keyId, newAccountId)
+    // }
+    // catch(err){
+    //   console.log(err)
+    // }
+    // setMnemonic(mnemonic);
+    // ;
+    // save(keyPublic, publicKey);
+    // save(keyAccount, "user");
+
+    //props.setLogin(true);
   }
   async function createNewFacility() {
-    try {
-      const mnemonic = await Mnemonic.generate12();
-      setMnemonic(mnemonic);
-      save(keyName, mnemonic.toString());
-      save(keyAccount,"facility")
-      props.setLogin(true);
-    } catch (err: any) {
-      Alert.alert(err.toString());
-    }
+    
+      try {
+        const provider = hethers.providers.getDefaultProvider("testnet");
+
+        const eoaAccount: any = {
+          account: operatorId,
+          privateKey: `0x${operatorKey.toStringRaw()}`, // Convert private key to short format using .toStringRaw()
+        };
+        const wallet = new hethers.Wallet(eoaAccount, provider);
+        const abi = [
+          "function register(bool _isCompany, string _zipCode) public",
+          "function addComodityForSubmission(bytes32 _id, Comodity _comodity) public",
+          "function addUserSubmission(address _company, bytes32 _id, UserSubmissions _userOrder) public",
+          "function payBill(bytes32 orderId) public payable",
+          "function claimEarnings(uint amount) public payable",
+        ];
+
+        // Create a ContractFactory object
+        const contract = new hethers.Contract(
+          "0x0000000000000000000000000000000002da4f47",
+          abi,
+          wallet
+        );
+        const int = await contract.register(false, zipCode, {
+          gasLimit: 300000,
+        });
+        console.log(int);
+      } catch (err) {
+        console.log(err)
+      }
+      save(keyZip, idStr);
+      save(keyId, idStr);
+      save(keyPrivate, keyStr);
+      save(keyAccount, "facility");
+    
   }
-  async function fromStringUser() {
-    try {
-      const mnemonic = await Mnemonic.fromString(mnemonicStr);
-      setMnemonic(mnemonic);
-      save(keyName, mnemonic.toString());
-      save(keyAccount,"user")
-      props.setLogin(true);
-    } catch (err: any) {
-      Alert.alert(err.toString());
-      setError(true);
-    }
-  }
-  async function fromStringFacility() {
-    try {
-      const mnemonic = await Mnemonic.fromString(mnemonicStr);
-      setMnemonic(mnemonic);
-      save(keyName, mnemonic.toString());
-      save(keyAccount,"facility")
-      props.setLogin(true);
-    } catch (err: any) {
-      Alert.alert(err.toString());
-      setError(true);
-    }
-  }
+
   return (
     <VStack space={4}>
-      <Text>Enter Mnemonic</Text>
       <Input
-        value={mnemonicStr}
-        onChangeText={(text) => setMnemonicStr(text)}
+        value={idStr}
+        placeholder="Enter Id"
+        onChangeText={(text) => setIdStr(text)}
       ></Input>
 
-      <HStack>
-        <Button onPress={fromStringUser}>User from Mnemonic</Button>
-        <Button onPress={fromStringFacility}>Facility from Mnemonic</Button>
-      </HStack>
-      <Button onPress={createNewUser}>Create New User</Button>
-      <Button onPress={createNewFacility}>Create New Facility</Button>
+      <Input
+        value={keyStr}
+        placeholder="Enter Key"
+        onChangeText={(text) => setKeyStr(text)}
+      ></Input>
+      <Input
+        value={zipCode}
+        placeholder="Enter Zip Code"
+        onChangeText={(text) => setZipCode(text)}
+      ></Input>
+      <Center>
+        <HStack space={10}>
+          <Button onPress={createNewUser}>Create New User</Button>
+          <Button onPress={createNewFacility}>Create New Facility</Button>
+        </HStack>
+      </Center>
+
       {error ? <Text>Error</Text> : <></>}
     </VStack>
   );

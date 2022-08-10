@@ -1,3 +1,4 @@
+
 console.clear();
 require("dotenv").config();
 const {
@@ -39,59 +40,61 @@ async function main() {
 		.setBytecode(contractBytecode);
 	
 
-	//Sign the transaction with the client operator key and submit to a Hedera network
+// 	//Sign the transaction with the client operator key and submit to a Hedera network
 	const txResponse =await contractCreate.execute(client);
 
-	//Get the receipt of the transaction
-	console.log(txResponse)
+// 	//Get the receipt of the transaction
+	
+
 	const receipt = await txResponse.getReceipt(client);
+	
 	const bytecodeFileId = receipt.fileId;
-	//console.log(receipt)
+	console.log(receipt)
 	console.log(receipt.contractId)
 	console.log(receipt.contractId.toSolidityAddress())
 	
-	// // Instantiate the smart contract
-	const contractInstantiateTx = new ContractCreateTransaction()
-		.setBytecodeFileId(bytecodeFileId)
-		.setGas(100000)
-		// .setConstructorParameters(
-		// 	new ContractFunctionParameters().addString("Alice").addUint256(111111)
-		// );
-	const contractInstantiateSubmit = await contractInstantiateTx.execute(client);
-	const contractInstantiateRx = await contractInstantiateSubmit.getReceipt(client);
-	const contractId = contractInstantiateRx.contractId;
-	const contractAddress = contractId.toSolidityAddress();
-	console.log(`- The smart contract ID is: ${contractId} \n`);
-	console.log(`- The smart contract ID in Solidity format is: ${contractAddress} \n`);
+// 	// // Instantiate the smart contract
+// 	const contractInstantiateTx = new ContractCreateTransaction()
+// 		.setBytecodeFileId(bytecodeFileId)
+// 		.setGas(100000)
+// 		// .setConstructorParameters(
+// 		// 	new ContractFunctionParameters().addString("Alice").addUint256(111111)
+// 		// );
+// 	const contractInstantiateSubmit = await contractInstantiateTx.execute(client);
+// 	const contractInstantiateRx = await contractInstantiateSubmit.getReceipt(client);
+// 	const contractId = contractInstantiateRx.contractId;
+// 	const contractAddress = contractId.toSolidityAddress();
+// 	console.log(`- The smart contract ID is: ${contractId} \n`);
+// 	console.log(`- The smart contract ID in Solidity format is: ${contractAddress} \n`);
 
-	// // Query the contract to check changes in state variable
-	// const contractQueryTx = new ContractCallQuery()
-	// 	.setContractId(contractId)
-	// 	.setGas(100000)
-	// 	.setFunction("getMobileNumber", new ContractFunctionParameters().addString("Alice"));
-	// const contractQuerySubmit = await contractQueryTx.execute(client);
-	// const contractQueryResult = contractQuerySubmit.getUint256(0);
-	// console.log(`- Here's the phone number that you asked for: ${contractQueryResult} \n`);
+// 	// // Query the contract to check changes in state variable
+// 	// const contractQueryTx = new ContractCallQuery()
+// 	// 	.setContractId(contractId)
+// 	// 	.setGas(100000)
+// 	// 	.setFunction("getMobileNumber", new ContractFunctionParameters().addString("Alice"));
+// 	// const contractQuerySubmit = await contractQueryTx.execute(client);
+// 	// const contractQueryResult = contractQuerySubmit.getUint256(0);
+// 	// console.log(`- Here's the phone number that you asked for: ${contractQueryResult} \n`);
 
-	// // Call contract function to update the state variable
-	// const contractExecuteTx = new ContractExecuteTransaction()
-	// 	.setContractId(contractId)
-	// 	.setGas(100000)
-	// 	.setFunction(
-	// 		"setMobileNumber",
-	// 		new ContractFunctionParameters().addString("Bob").addUint256(222222)
-	// 	);
-	// const contractExecuteSubmit = await contractExecuteTx.execute(client);
-	// const contractExecuteRx = await contractExecuteSubmit.getReceipt(client);
-	// console.log(`- Contract function call status: ${contractExecuteRx.status} \n`);
+// 	// // Call contract function to update the state variable
+// 	// const contractExecuteTx = new ContractExecuteTransaction()
+// 	// 	.setContractId(contractId)
+// 	// 	.setGas(100000)
+// 	// 	.setFunction(
+// 	// 		"setMobileNumber",
+// 	// 		new ContractFunctionParameters().addString("Bob").addUint256(222222)
+// 	// 	);
+// 	// const contractExecuteSubmit = await contractExecuteTx.execute(client);
+// 	// const contractExecuteRx = await contractExecuteSubmit.getReceipt(client);
+// 	// console.log(`- Contract function call status: ${contractExecuteRx.status} \n`);
 
-	// // Query the contract to check changes in state variable
-	// const contractQueryTx1 = new ContractCallQuery()
-	// 	.setContractId(contractId)
-	// 	.setGas(100000)
-	// 	.setFunction("getMobileNumber", new ContractFunctionParameters().addString("Bob"));
-	// const contractQuerySubmit1 = await contractQueryTx1.execute(client);
-	// const contractQueryResult1 = contractQuerySubmit1.getUint256(0); //get the value at 0th index
-	// console.log(`- Here's the phone number that you asked for: ${contractQueryResult1} \n`);
+// 	// // Query the contract to check changes in state variable
+// 	// const contractQueryTx1 = new ContractCallQuery()
+// 	// 	.setContractId(contractId)
+// 	// 	.setGas(100000)
+// 	// 	.setFunction("getMobileNumber", new ContractFunctionParameters().addString("Bob"));
+// 	// const contractQuerySubmit1 = await contractQueryTx1.execute(client);
+// 	// const contractQueryResult1 = contractQuerySubmit1.getUint256(0); //get the value at 0th index
+// 	// console.log(`- Here's the phone number that you asked for: ${contractQueryResult1} \n`);
 }
 main();
