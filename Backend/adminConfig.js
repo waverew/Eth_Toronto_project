@@ -89,6 +89,7 @@ app.post('/setCompanyItemList', (req, res) => {
   const areaCode = itemListData.areaCode;
   const orderId = itemListData.orderId;
   const campaignDays = itemListData.campaignDays;
+  const companyAddress = itemListData.companyAddress;
   const _timestampFrom = new Date(Date.now());
   const _timestampTo = new Date(_timestampFrom);
   _timestampTo.setDate(_timestampTo.getDate() + Number( campaignDays));
@@ -102,8 +103,10 @@ app.post('/setCompanyItemList', (req, res) => {
     days: itemListData.days,  //[0,1,2,3,4,5,6] = [S,M,T,W,T,F,S]
     timestampFrom: _timestampFrom.toDateString(),
     timestampTo: _timestampTo.toDateString(),
+    companyAddress:companyAddress,
     // orderId: itemListData.orderId,
   });
+
   res.sendStatus(200);
 });
 
@@ -142,6 +145,70 @@ app.post('/getCompanyItemList', (req, res) => {
   // console.log(itemListRes);
   // res.send(itemListRes);
 });
+
+app.post('/getClamableAmount', async (req, res)=>{
+  var userId = req.body.userId;
+  const total = await (await ref.child("users/"+userId+'/total').get()).val()
+  console.log(total)
+  res.send({amount:total})
+})
+
+app.post('/userSubmission', async (req, res) => {
+  const price = req.body.price;
+  const amount = req.body.amount;
+  var userId = req.body.userId;
+  userId = userId.replaceAll(".","_")
+  const orderId = req.body.orderId;
+  var companyId = req.body.companyId;
+  companyId = companyId.replaceAll(".","_")
+  await ref.child("userOrders/"+userId+"/").push({"orderId":orderId,"comapny":companyId, "price":price, "amount":amount})
+  console.log("updating")
+  const total =   (await ref.child("users/"+userId+'/total').get())
+  
+  if(total===undefined){
+    await ref.child("users/"+userId+'/total').set((Number(amount)*Number(price)))
+  }
+  else if(total===null){
+    await ref.child("users/"+userId+'/total').set(Number(amount)*Number(price))
+  }
+  else{
+    const t = total.val()
+    await ref.child("users/"+userId+'/total').set(Number(t)+(Number(amount)*Number(price)))
+  }
+
+  const companyTotal = await ref.child("companyOrders/"+companyId+"/due").get()
+  if(companyTotal===undefined){
+    await ref.child("companyOrders/"+companyId+"/due").set(Number(amount)*Number(price))
+  }
+  else if(companyTotal===null){
+    await ref.child("companyOrders/"+companyId+"/due").set(Number(amount)*Number(price))
+  }
+  else{
+    const t = companyTotal.val()
+    await ref.child("companyOrders/"+companyId+"/due").set(Number(t)+Number(amount*price))
+  }
+  res.sendStatus(200)
+  });
+
+  
+  
+app.post('/payBalance', async(req,res)=>{
+  const amount = req.body.amount;
+  const companyId = req.body.companyId;
+  const total = (await (await ref.child("companyOrders/"+companyId+"/due").get()).val())
+  await ref.child("companyOrders/"+companyId+"/due").set(Number(total)-Number(amount))
+  res.sendStatus(200)
+})
+
+app.post('/claimEarning', async(req,res)=>{
+  const amount = req.body.amount;
+  const userId = req.body.userId;
+  const total = await (await ref.child("users/"+userId+'/total').get()).val()
+  await ref.child("users/"+userId+"/total").set(Number(total)-Number(amount))
+  const returnVal = Number(total)-Number(amount)
+  res.send({amount:returnVal})
+
+})
 
 app.post('/getCompanyItemListPerAreaCode', (req, res) => {
   const itemName = req.body.itemName;

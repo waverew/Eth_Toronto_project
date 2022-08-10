@@ -157,6 +157,7 @@ const Login = (props: props) => {
 
   return (
     <VStack space={4}>
+      <Center><Text fontSize={30}>Login by Credientials</Text></Center>
       <Input
         value={idStr}
         placeholder="Enter Id"

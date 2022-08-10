@@ -1,9 +1,11 @@
 import { BigNumber, hethers } from "@hashgraph/hethers";
-import { VStack, Text, Input, Button, Select, CheckIcon } from "native-base";
+import { VStack, Text, Input, Button, Select, CheckIcon, Center } from "native-base";
 import { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import DropDownPicker from "react-native-dropdown-picker";
 import { keyId, keyPrivate } from "../../constants";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { PrivateKey } from "@hashgraph/cryptography";
 const RecyclingFacility = () => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState([]);
@@ -59,16 +61,19 @@ const RecyclingFacility = () => {
     return result;
   }
   async function submitOrder() {
+    alert("Added The Commodity")
     try {
       const operatorId = await getValueFor(keyId);
       const operatorKey = await getValueFor(keyPrivate);
+      const op = PrivateKey.fromString(operatorKey);
       const provider = hethers.providers.getDefaultProvider("testnet");
 
       const eoaAccount: any = {
         account: operatorId,
-        privateKey: `0x${operatorKey}`, // Convert private key to short format using .toStringRaw()
+        privateKey: `0x${op.toStringRaw()}`, // Convert private key to short format using .toStringRaw()
       };
       const wallet = new hethers.Wallet(eoaAccount, provider);
+      const address = wallet.address
       const abi = [
         "function register(bool _isCompany, string _zipCode) public",
         "function addComodityForSubmission(bytes32 _id, uint _price, uint _amount, string memory _typeOfComodity)",
@@ -116,10 +121,11 @@ const RecyclingFacility = () => {
           days: days,
           campaignDays:campain,
           orderId: hex,
+          companyAddress:address
 
         }),
       });
-      alert("Added The Commodity")
+      
       console.log(int);
     } catch (err) {
       console.log(err);
@@ -131,7 +137,9 @@ const RecyclingFacility = () => {
     setBytesId(v);
   }, []);
   return (
+    <SafeAreaView>
     <VStack space="4">
+      <Center><Text fontSize={30}>Add Items for Collection </Text></Center>
       <Input placeholder="Amount" onChangeText={setAmount}></Input>
       <Input placeholder="Zip Code" onChangeText={setZip}></Input>
       <Input placeholder="price" onChangeText={setprice}></Input>
@@ -161,6 +169,7 @@ const RecyclingFacility = () => {
       </Select>
       <Button onPress={submitOrder}>Submit</Button>
     </VStack>
+    </SafeAreaView>
   );
 };
 
